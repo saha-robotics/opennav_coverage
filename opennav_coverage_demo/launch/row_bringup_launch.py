@@ -16,17 +16,16 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import LoadComposableNodes
-from launch_ros.actions import Node
+from launch_ros.actions import Node, ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode, ParameterFile
 from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
     params_file = LaunchConfiguration('params_file')
+    namespace = LaunchConfiguration('namespace')
 
-    lifecycle_nodes = ['controller_server',
-                       'bt_navigator',
-                       'velocity_smoother',
+    lifecycle_nodes = ['bt_navigator',
                        'row_coverage_server']
 
     remappings = [('/tf', 'tf'),
@@ -34,7 +33,7 @@ def generate_launch_description():
 
     # Create our own temporary YAML files that include substitutions
     autostart = True
-    use_sim_time = True
+    use_sim_time = False
     param_substitutions = {
         'use_sim_time': str(use_sim_time),
         'autostart': str(autostart)}
@@ -42,7 +41,7 @@ def generate_launch_description():
     configured_params = ParameterFile(
         RewrittenYaml(
             source_file=params_file,
-            root_key='',
+            root_key=namespace,
             param_rewrites=param_substitutions,
             convert_types=True),
         allow_substs=True)
@@ -51,57 +50,49 @@ def generate_launch_description():
         'RCUTILS_LOGGING_BUFFERED_STREAM', '1')
 
     declare_params_file_cmd = DeclareLaunchArgument('params_file')
+    declare_namespace_cmd = DeclareLaunchArgument(
+        'namespace',
+        default_value='',
+        description='Top-level namespace')
 
-    create_container = Node(
-        name='nav2_container',
+    load_composable_nodes = ComposableNodeContainer(
+        name='image_container',
+        namespace=namespace,
         package='rclcpp_components',
-        executable='component_container_isolated',
-        parameters=[configured_params, {'autostart': autostart}],
-        remappings=remappings,
-        output='screen')
-
-    load_composable_nodes = LoadComposableNodes(
-        target_container='nav2_container',
+        executable='component_container',
         composable_node_descriptions=[
-            ComposableNode(
-                package='nav2_controller',
-                plugin='nav2_controller::ControllerServer',
-                name='controller_server',
-                parameters=[configured_params],
-                remappings=remappings + [('cmd_vel', 'cmd_vel_nav')]),
             ComposableNode(
                 package='opennav_row_coverage',
                 plugin='opennav_row_coverage::RowCoverageServer',
                 name='row_coverage_server',
+                namespace=namespace,
                 parameters=[configured_params],
                 remappings=remappings),
             ComposableNode(
                 package='backported_bt_navigator',
                 plugin='backported_bt_navigator::BtNavigator',
                 name='bt_navigator',
+                namespace=namespace,
                 parameters=[configured_params],
                 remappings=remappings),
-            ComposableNode(
-                package='nav2_velocity_smoother',
-                plugin='nav2_velocity_smoother::VelocitySmoother',
-                name='velocity_smoother',
-                parameters=[configured_params],
-                remappings=remappings +
-                           [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),
             ComposableNode(
                 package='nav2_lifecycle_manager',
                 plugin='nav2_lifecycle_manager::LifecycleManager',
                 name='lifecycle_manager_navigation',
+                namespace=namespace,
                 parameters=[{'use_sim_time': use_sim_time,
                              'autostart': autostart,
                              'node_names': lifecycle_nodes}]),
         ],
+
     )
 
-    # # Create the launch description and populate
+
+
+
+    # Create the launch description and populate
     ld = LaunchDescription()
     ld.add_action(stdout_linebuf_envvar)
     ld.add_action(declare_params_file_cmd)
-    ld.add_action(create_container)
     ld.add_action(load_composable_nodes)
     return ld
