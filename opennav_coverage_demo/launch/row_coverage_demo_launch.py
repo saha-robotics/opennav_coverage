@@ -17,9 +17,10 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription
+from launch.actions import ExecuteProcess, IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch_ros.actions import Node, PushRosNamespace
+from launch_ros.actions import Node
+from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
@@ -27,7 +28,12 @@ def generate_launch_description():
     coverage_demo_dir = get_package_share_directory('opennav_coverage_demo')
 
     param_file_path = os.path.join(coverage_demo_dir, 'demo_params.yaml')
-    namespace = 'SR77P1'
+    namespace_cmd = DeclareLaunchArgument(
+        'namespace',
+        default_value=os.getenv("SMR_PREFIX", "none"),
+        description="Robot namespace prefix",
+    )
+    namespace = LaunchConfiguration("namespace")
 
     # start navigation
     bringup_cmd = IncludeLaunchDescription(
@@ -45,6 +51,7 @@ def generate_launch_description():
         output='screen')
 
     ld = LaunchDescription()
+    ld.add_action(namespace_cmd)
     ld.add_action(bringup_cmd)
     ld.add_action(demo_cmd)
     return ld

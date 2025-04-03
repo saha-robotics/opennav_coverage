@@ -6,7 +6,7 @@
             <gml:Polygon srsName="map">
                 <gml:outerBoundaryIs>
                     <gml:LinearRing>
-                        <gml:coordinates>5.0,5.0 5.0,15.0 15.0,15.0 10.0,5.0 5.0,5.0</gml:coordinates>
+                        <gml:coordinates>0.04,5.0 3.10,4.0 4.0,1.90 2.0,2.0 0.05,2.0 0.04,5.0</gml:coordinates>
                     </gml:LinearRing>
                 </gml:outerBoundaryIs>
             </gml:Polygon>
@@ -15,49 +15,35 @@
     <Row id="1">
         <geometry>
             <gml:LineString srsName="map">
-                <gml:coordinates>5.25,5.0 5.5,15.0</gml:coordinates>
+                <gml:coordinates>0.5,4.5 3.0,3.8</gml:coordinates>
             </gml:LineString>
         </geometry>
     </Row>
     <Row id="2">
         <geometry>
             <gml:LineString srsName="map">
-                <gml:coordinates>7.7,5.0 6.76,15.0</gml:coordinates>
+                <gml:coordinates>1.0,4.0 3.5,3.0</gml:coordinates>
             </gml:LineString>
         </geometry>
     </Row>
     <Row id="3">
         <geometry>
             <gml:LineString srsName="map">
-                <gml:coordinates>8.38,5.0 9.3,15.0</gml:coordinates>
+                <gml:coordinates>1.5,3.5 3.8,2.5</gml:coordinates>
             </gml:LineString>
         </geometry>
     </Row>
     <Row id="4">
         <geometry>
             <gml:LineString srsName="map">
-                <gml:coordinates>11.26,7.53 10.37,15.0</gml:coordinates>
+                <gml:coordinates>2.0,3.0 4.0,2.0</gml:coordinates>
             </gml:LineString>
         </geometry>
     </Row>
     <Row id="5">
         <geometry>
             <gml:LineString srsName="map">
-                <gml:coordinates>11.84,8.7 11.5,15.0</gml:coordinates>
-            </gml:LineString>
-        </geometry>
-    </Row>
-    <Row id="6">
-        <geometry>
-            <gml:LineString srsName="map">
-                <gml:coordinates>13.23,11.47 13.16,15.0</gml:coordinates>
-            </gml:LineString>
-        </geometry>
-    </Row>
-    <Row id="7">
-        <geometry>
-            <gml:LineString srsName="map">
-                <gml:coordinates>13.71,12.43 14.15,15.0</gml:coordinates>
+                <gml:coordinates>2.5,2.5 3.5,2.2</gml:coordinates>
             </gml:LineString>
         </geometry>
     </Row>
